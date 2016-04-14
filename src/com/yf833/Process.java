@@ -4,12 +4,12 @@ package com.yf833;
 public class Process {
 
     public int id;
-    public float A;
-    public float B;
-    public float C;
+    public double A;
+    public double B;
+    public double C;
 
 
-    public Process(int id, float A, float B, float C){
+    public Process(int id, double A, double B, double C){
         this.id = id;
         this.A = A;
         this.B = B;
@@ -17,6 +17,14 @@ public class Process {
     }
 
 
+
+    public String toString(){
+
+        String output = "";
+        output += "process" + this.id + " ";
+
+        return output;
+    }
 
 
 }
