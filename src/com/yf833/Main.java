@@ -19,6 +19,7 @@ public class Main {
     private static String R;    // the replacement algorithm (FIFO, RANDOM, LRU)
     private static int debug_level;     // the level of debugging output (1: debug; 0: no debug)
 
+    private static int num_evictions = 0;          // count the number of evictions
     private static int number_of_pages;
     private static Scanner rand_scanner;
     private static ArrayList<Process> processes;
@@ -49,7 +50,7 @@ public class Main {
         runSimulation();
 
         // (6) print output
-
+        Util.printOutput(processes, number_of_pages);
     }
 
 
@@ -59,8 +60,6 @@ public class Main {
     public static void runSimulation(){
 
         int cycle = 1;                  // time counter
-        int num_evictions = 0;          // count the number of evictions
-
 
         // while there are unfinished processes
         while(!Util.processesAreFinished(processes)){
@@ -114,7 +113,7 @@ public class Main {
                             // print debug info
                             if (debug_level == 1 || debug_level == 11) {
                                 System.out.print(p.id + " references word " + p.current_word + " at time " + cycle + ": ");
-                                System.out.println("Fault, evicting page " + evicted_page + " of " + evicted_frame.process_number + 1 + " from frame " + evicted_frame_index);
+                                System.out.println("Fault, evicting page " + evicted_page + " of " + (evicted_frame.process_number + 1) + " from frame " + evicted_frame_index);
                             }
 
                         }
@@ -124,7 +123,7 @@ public class Main {
                             // find the highest numbered free frame
                             int highest_free_frame = frame_table.size() - 1;
                             for (int i = 0; i < frame_table.size(); i++) {
-                                if (frame_table.get(i).is_active) {
+                                if (!frame_table.get(i).is_active) {
                                     highest_free_frame = i;
                                 }
                             }

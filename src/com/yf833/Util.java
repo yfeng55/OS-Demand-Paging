@@ -67,5 +67,36 @@ public class Util {
     }
 
 
+    public static void printOutput(ArrayList<Process> processes, int num_evictions){
+
+        int total_faults = 0;
+        int total_residency = 0;
+
+        for(Process p : processes){
+            total_faults += p.number_of_faults;
+            total_residency += p.residency_time;
+
+            System.out.print("Process " + p.id + "had ");
+            System.out.print(p.number_of_faults + " faults and ");
+            System.out.println(p.residency_time / p.number_of_evictions + " average residency.");
+        }
+
+        System.out.println();
+        System.out.print("The total number of faults is " + total_faults + " and the overall average residency is ");
+        System.out.println(total_residency / num_evictions);
+
+    }
+
 
 }
+
+
+
+
+
+
+
+
+
+
+
