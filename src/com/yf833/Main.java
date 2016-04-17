@@ -16,14 +16,13 @@ public class Main {
     private static int S;       // the size of a process
     private static int J;       // the job mix which determines A, B, and C
     private static int N;       // the number of references for each process
-    private static String R;    // the replacement algorithm (FIFO, RANDOM, LRU)
+    private static String R;    // the replacement algorithm (fifo, RANDOM, LRU)
     private static int debug_level;     // the level of debugging output (1: debug; 0: no debug)
 
     private static int number_of_pages;
     private static Scanner rand_scanner;
     private static ArrayList<Process> processes;
     private static ArrayList<FTE> frame_table;
-
 
 
 
@@ -95,7 +94,24 @@ public class Main {
                         if (Util.isFull(frame_table, number_of_pages)) {
 
                             //find the frame to replace using the specified replacement algorithm
-                            FTE evicted_frame = Replace.FIFO(frame_table);
+                            FTE evicted_frame = null;
+
+                            if(R.equals("lru")){
+                                System.out.println("ERROR: invalid replacement algorithm selection");
+                                System.exit(1);
+                            }
+                            else if(R.equals("fifo")){
+                                evicted_frame = Replace.fifo(frame_table);
+                            }
+                            else if(R.equals("random")){
+                                int rand_number = Integer.parseInt(rand_scanner.nextLine());
+                                evicted_frame = Replace.random(frame_table, rand_number, number_of_pages);
+                            }
+                            else{
+                                System.out.println("ERROR: invalid replacement algorithm selection");
+                                System.exit(1);
+                            }
+
 
                             int evicted_page = evicted_frame.page_number;
                             int evicted_frame_index = evicted_frame.frame_table_index;
@@ -142,7 +158,7 @@ public class Main {
 
                     // for each process, generate a new reference //
                     int random_num = Integer.parseInt(rand_scanner.nextLine());
-                    p.generateNextReference(random_num, S, N);
+                    p.generateNextReference(random_num, S, N, rand_scanner);
                     if(debug_level == 11){
                         System.out.println(p.id + " uses random number: " + random_num);
                     }

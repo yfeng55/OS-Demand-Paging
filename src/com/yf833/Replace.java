@@ -8,7 +8,7 @@ public class Replace {
 
 
     // replace the frame that was added earliest
-    public static FTE FIFO(ArrayList<FTE> frame_table){
+    public static FTE fifo(ArrayList<FTE> frame_table){
 
         int evict_index = 0;
         int earliest_index = frame_table.get(0).time_added;
@@ -28,7 +28,19 @@ public class Replace {
 
 
 
-//    public static FTE LRU(ArrayList<FTE> frame_table){
+    // replace a frame at random
+    public static FTE random(ArrayList<FTE> frame_table, int rand_number, int num_pages){
+
+        int rand_index = Util.mod(rand_number, num_pages);
+        return frame_table.get(rand_index);
+
+    }
+
+
+
+
+
+//    public static FTE lru(ArrayList<FTE> frame_table){
 //
 //        // Divides all frames into four classes (pools A, B, C, & D)
 //        ArrayList<FTE> poolA = new ArrayList<>();     // Not referenced, not modified.

@@ -1,6 +1,8 @@
 package com.yf833;
 
 
+import java.util.Scanner;
+
 public class Process {
 
     public int id;
@@ -54,7 +56,7 @@ public class Process {
         return current_word / page_size;
     }
 
-    public void generateNextReference(int random_num, int process_size, int num_refs_per_process){
+    public void generateNextReference(int random_num, int process_size, int num_refs_per_process, Scanner rand_scanner){
 
         double quotient = random_num / (Integer.MAX_VALUE + 1d);
 
@@ -68,7 +70,8 @@ public class Process {
             this.current_word = Util.mod(this.current_word + 4, process_size);
         }
         else if(quotient >= (A+B+C)){
-            this.current_word = Util.mod(random_num, process_size);
+            int next_rand_num = Integer.parseInt(rand_scanner.nextLine());
+            this.current_word = Util.mod(next_rand_num, process_size);
         }
         else{
             System.out.println("ERROR: problem when trying to generate the next reference");
