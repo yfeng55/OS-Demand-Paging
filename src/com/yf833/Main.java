@@ -19,7 +19,6 @@ public class Main {
     private static String R;    // the replacement algorithm (FIFO, RANDOM, LRU)
     private static int debug_level;     // the level of debugging output (1: debug; 0: no debug)
 
-    private static int num_evictions = 0;          // count the number of evictions
     private static int number_of_pages;
     private static Scanner rand_scanner;
     private static ArrayList<Process> processes;
@@ -50,7 +49,7 @@ public class Main {
         runSimulation();
 
         // (6) print output
-        Util.printOutput(processes, number_of_pages);
+        Util.printOutput(processes);
     }
 
 
@@ -100,10 +99,8 @@ public class Main {
 
                             int evicted_page = evicted_frame.page_number;
                             int evicted_frame_index = evicted_frame.frame_table_index;
-                            processes.get(evicted_frame.process_number).number_of_evictions++;
-
-                            num_evictions++;
-                            processes.get(evicted_frame.process_number).residency_time += (cycle - evicted_frame.time_added);
+                            processes.get(evicted_frame.process_number-1).number_of_evictions++;
+                            processes.get(evicted_frame.process_number-1).residency_time += (cycle - evicted_frame.time_added);
 
                             // replace the frames
                             FTE new_frame = new FTE(p.id, p.getCurrentPage(), cycle, evicted_frame_index);
@@ -113,7 +110,7 @@ public class Main {
                             // print debug info
                             if (debug_level == 1 || debug_level == 11) {
                                 System.out.print(p.id + " references word " + p.current_word + " at time " + cycle + ": ");
-                                System.out.println("Fault, evicting page " + evicted_page + " of " + (evicted_frame.process_number + 1) + " from frame " + evicted_frame_index);
+                                System.out.println("Fault, evicting page " + evicted_page + " of " + (evicted_frame.process_number) + " from frame " + evicted_frame_index);
                             }
 
                         }

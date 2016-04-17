@@ -29,7 +29,6 @@ public class Process {
         this.S = S;
 
         //set default values
-
         this.current_word = Util.mod(111*this.id, S);
         this.current_ref_number = 1;
         this.number_of_faults = 0;
