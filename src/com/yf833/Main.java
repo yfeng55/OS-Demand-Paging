@@ -36,7 +36,7 @@ public class Main {
 
         // (2) initialize processes based on the job mix specified (J)
         processes = initProcesses();
-        System.out.println(processes.toString() + "\n\n");
+        System.out.println();
 
         // (3) initialize the frame table with default values
         frame_table = initFrameTable();
@@ -95,7 +95,7 @@ public class Main {
                         if (Util.isFull(frame_table, number_of_pages)) {
 
                             //find the frame to replace using the specified replacement algorithm
-                            FTE evicted_frame = evictFIFO();
+                            FTE evicted_frame = Replace.FIFO(frame_table);
 
                             int evicted_page = evicted_frame.page_number;
                             int evicted_frame_index = evicted_frame.frame_table_index;
@@ -156,27 +156,6 @@ public class Main {
 
 
     }
-
-
-
-    // remove the oldest added frame from the frame table
-    public static FTE evictFIFO(){
-        int evict_index = 0;
-        int earliest_index = frame_table.get(0).time_added;
-
-        // find the frame that was added first
-        int i=0;
-        for(FTE f : frame_table){
-            if(f.time_added < earliest_index && f.is_active == true){
-                earliest_index = f.time_added;
-                evict_index = i;
-            }
-            i++;
-        }
-
-        return frame_table.get(evict_index);
-    }
-
 
 
     // read input parameters

@@ -7,12 +7,27 @@ import java.util.ArrayList;
 public class Replace {
 
 
+    // replace the frame that was added earliest
+    public static FTE FIFO(ArrayList<FTE> frame_table){
 
-//    public static FTE FIFO(ArrayList<FTE> frame_table){
-//
-//    }
-//
-//
+        int evict_index = 0;
+        int earliest_index = frame_table.get(0).time_added;
+
+        // find the frame that was added first
+        int i=0;
+        for(FTE f : frame_table){
+            if(f.time_added < earliest_index && f.is_active == true){
+                earliest_index = f.time_added;
+                evict_index = i;
+            }
+            i++;
+        }
+
+        return frame_table.get(evict_index);
+    }
+
+
+
 //    public static FTE LRU(ArrayList<FTE> frame_table){
 //
 //        // Divides all frames into four classes (pools A, B, C, & D)
