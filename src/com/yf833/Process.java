@@ -30,7 +30,7 @@ public class Process {
 
         //set default values
 
-        this.current_word = Util.mod(111, S);
+        this.current_word = Util.mod(111*this.id, S);
         this.current_ref_number = 1;
         this.number_of_faults = 0;
         this.number_of_evictions = 0;
