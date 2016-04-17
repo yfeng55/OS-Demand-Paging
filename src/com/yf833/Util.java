@@ -82,8 +82,14 @@ public class Util {
             total_evictions += p.number_of_evictions;
 
             System.out.print("Process " + p.id + " had ");
-            System.out.print(p.number_of_faults + " faults and ");
-            System.out.println((double) p.residency_time / p.number_of_evictions + " average residency.");
+            System.out.print(p.number_of_faults + " faults");
+
+            if(p.number_of_evictions == 0){
+                System.out.println(".\n\tWith no evictions, the average residence is undefined.");
+            }else{
+                System.out.println(" and " + ((double) p.residency_time / p.number_of_evictions) + " average residency.");
+            }
+
         }
 
         System.out.println();
