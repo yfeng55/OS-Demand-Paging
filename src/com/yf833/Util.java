@@ -12,7 +12,7 @@ public class Util {
 
 
 
-    // check if processes are finished
+    // check if all processes are finished
     public static boolean processesAreFinished(ArrayList<Process> processes){
 
         for(Process p : processes){
@@ -29,7 +29,7 @@ public class Util {
     public static boolean isHit(ArrayList<FTE> frametable, Process p){
 
         for(FTE f : frametable){
-            if(f.process_number == p.id  &&  f.page_number == p.getCurrentPage()  &&  f.is_active == true){
+            if(f.process_number == p.id  &&  f.page_number == p.getReferencedPage()  &&  f.is_referenced == true){
                 return true;
             }
         }
@@ -41,7 +41,7 @@ public class Util {
     public static int getHit(ArrayList<FTE> frametable, Process p){
 
         for(int i=0; i<frametable.size(); i++){
-            if(frametable.get(i).process_number == p.id  &&  frametable.get(i).page_number == p.getCurrentPage()  &&  frametable.get(i).is_active == true){
+            if(frametable.get(i).process_number == p.id  &&  frametable.get(i).page_number == p.getReferencedPage()  &&  frametable.get(i).is_referenced == true){
                 return i;
             }
         }
@@ -50,16 +50,16 @@ public class Util {
 
 
     // check if the frame table is full or not
-    public static boolean isFull(ArrayList<FTE> frame_table, int total_pages){
-        int active_pages = 0;
+    public static boolean isFull(ArrayList<FTE> frame_table, int total_frames){
+        int total_references = 0;
 
         for(FTE f : frame_table){
-            if(f.is_active){
-                active_pages++;
+            if(f.is_referenced){
+                total_references++;
             }
         }
 
-        if(active_pages < total_pages){
+        if(total_references < total_frames){
             return false;
         }else{
             return true;
@@ -77,17 +77,17 @@ public class Util {
         int total_evictions = 0;
 
         for(Process p : processes){
-            total_faults += p.number_of_faults;
+            total_faults += p.num_faults;
             total_residency += p.residency_time;
-            total_evictions += p.number_of_evictions;
+            total_evictions += p.num_evictions;
 
             System.out.print("Process " + p.id + " had ");
-            System.out.print(p.number_of_faults + " faults");
+            System.out.print(p.num_faults + " faults");
 
-            if(p.number_of_evictions == 0){
+            if(p.num_evictions == 0){
                 System.out.println(".\n\tWith no evictions, the average residence is undefined.");
             }else{
-                System.out.println(" and " + ((double) p.residency_time / p.number_of_evictions) + " average residency.");
+                System.out.println(" and " + ((double) p.residency_time / p.num_evictions) + " average residency.");
             }
 
         }

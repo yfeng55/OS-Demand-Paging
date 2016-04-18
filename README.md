@@ -17,7 +17,7 @@ TO-DOs
 
 (7) refactor 
         - put eviction methods into Replace.java ***
-        - put replacement logic into the Replace functions
+        - put replacement logic into the Replace functions 
         - rename variable names 
         - delete unused variables 
 

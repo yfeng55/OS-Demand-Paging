@@ -8,11 +8,8 @@ public class FTE {
     public int time_added;
     public int frame_table_index;
 
-    public boolean is_active;
-    public boolean is_loaded;
-    public boolean is_modified;
-
-    public int last_used;
+    public boolean is_referenced;
+    public int last_used;           // tracks when this frame was last used (for LRU)
 
 
     public FTE(int process_id, int page_num, int cycle, int index){
@@ -24,10 +21,7 @@ public class FTE {
 
 
         // default values
-        this.is_active = false;
-        this.is_loaded = false;
-        this.is_modified = false;
-
+        this.is_referenced = false;
         this.last_used = 0;
 
     }

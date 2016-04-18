@@ -19,7 +19,7 @@ public class Main {
     private static String R;    // the replacement algorithm (fifo, RANDOM, LRU)
     private static int debug_level;     // the level of debugging output (1: debug; 0: no debug)
 
-    private static int number_of_pages;
+    private static int number_of_frames; // number of frames in the table
     private static Scanner rand_scanner;
     private static ArrayList<Process> processes;
     private static ArrayList<FTE> frame_table;
@@ -77,90 +77,88 @@ public class Main {
 
                         //get the location of the hit (index in the frame table), and set that frame to loaded
                         int hit_index = Util.getHit(frame_table, p);
-                        frame_table.get(hit_index).is_loaded = true;
                         frame_table.get(hit_index).last_used = cycle;
 
                         if (debug_level == 1 || debug_level == 11) {
-                            System.out.print(p.id + " references word " + p.current_word + " at time " + cycle + ": ");
+                            System.out.print(p.id + " references word " + p.current_ref + " (page " + p.getReferencedPage() + ")" + " at time " + cycle + ": ");
                             System.out.println("Hit in frame " + hit_index);
                         }
 
                     }
-                    // CASE 2: PAGE MISS //
+                    // CASE 2: FAULT //
                     else {
 
-                        p.number_of_faults++;
-
-                        // CASE 2a: if the frame table is full //
-                        if (Util.isFull(frame_table, number_of_pages)) {
+                        // CASE 2a: frame table is full -- need to evict using specified method //
+                        if (Util.isFull(frame_table, number_of_frames)) {
 
                             //find the frame to replace using the specified replacement algorithm
-                            FTE evicted_frame = null;
+                            int evicted_frame_index = -1;
 
                             if(R.equals("lru")){
-                                evicted_frame = Replace.lru(frame_table);
+                                evicted_frame_index = Replace.lru(frame_table);
                             }
                             else if(R.equals("fifo")){
-                                evicted_frame = Replace.fifo(frame_table);
+                                evicted_frame_index = Replace.fifo(frame_table);
                             }
                             else if(R.equals("random")){
                                 int rand_number = Integer.parseInt(rand_scanner.nextLine());
-                                evicted_frame = Replace.random(frame_table, rand_number, number_of_pages);
+                                evicted_frame_index = Replace.random(frame_table, rand_number, number_of_frames);
                             }
                             else{
                                 System.out.println("ERROR: invalid replacement algorithm selection");
                                 System.exit(1);
                             }
 
+                            FTE evicted_frame = frame_table.get(evicted_frame_index);
 
-                            int evicted_page = evicted_frame.page_number;
-                            int evicted_frame_index = evicted_frame.frame_table_index;
-                            processes.get(evicted_frame.process_number-1).number_of_evictions++;
+                            processes.get(evicted_frame.process_number-1).num_evictions++;
                             processes.get(evicted_frame.process_number-1).residency_time += (cycle - evicted_frame.time_added);
 
                             // replace the frames
-                            FTE new_frame = new FTE(p.id, p.getCurrentPage(), cycle, evicted_frame_index);
-                            new_frame.is_active = true;
+                            FTE new_frame = new FTE(p.id, p.getReferencedPage(), cycle, evicted_frame_index);
+                            new_frame.is_referenced = true;
                             new_frame.last_used = cycle;
                             frame_table.set(evicted_frame_index, new_frame);
 
                             // print debug info
                             if (debug_level == 1 || debug_level == 11) {
-                                System.out.print(p.id + " references word " + p.current_word + " at time " + cycle + ": ");
-                                System.out.println("Fault, evicting page " + evicted_page + " of " + (evicted_frame.process_number) + " from frame " + evicted_frame_index);
+                                System.out.print(p.id + " references word " + p.current_ref + " (page " + p.getReferencedPage() + ")" + " at time " + cycle + ": ");
+                                System.out.println("Fault, evicting page " + evicted_frame.page_number + " of " + (evicted_frame.process_number) + " from frame " + evicted_frame_index);
                             }
 
                         }
-                        // CASE 2b: frame table is not full //
+                        // CASE 2b: frame table is not full, select the highest numbered free frame //
                         else {
 
                             // find the highest numbered free frame
                             int highest_free_frame = frame_table.size() - 1;
                             for (int i = 0; i < frame_table.size(); i++) {
-                                if (!frame_table.get(i).is_active) {
+                                if (!frame_table.get(i).is_referenced) {
                                     highest_free_frame = i;
                                 }
                             }
 
                             //replace free frame with new frame
-                            FTE new_frame = new FTE(p.id, p.getCurrentPage(), cycle, highest_free_frame);
-                            new_frame.is_active = true;
+                            FTE new_frame = new FTE(p.id, p.getReferencedPage(), cycle, highest_free_frame);
+                            new_frame.is_referenced = true;
                             new_frame.last_used = cycle;
                             frame_table.set(highest_free_frame, new_frame);
 
                             // print debug info
                             if (debug_level == 1 || debug_level == 11) {
-                                System.out.print(p.id + " references word " + p.current_word + " at time " + cycle + ": ");
+                                System.out.print(p.id + " references word " + p.current_ref + " (page " + p.getReferencedPage() + ")" + " at time " + cycle + ": ");
                                 System.out.println("Fault, using free frame " + highest_free_frame);
                             }
                         }
+
+                        p.num_faults++;
 
                     }
 
 
                     // for each process, generate a new reference //
                     int random_num = Integer.parseInt(rand_scanner.nextLine());
-                    p.generateNextReference(random_num, S, N, rand_scanner);
+                    p.generateNextReference(random_num, N, rand_scanner, RAND_MAX);
                     if(debug_level == 11){
                         System.out.println(p.id + " uses random number: " + random_num);
                     }
@@ -188,8 +186,8 @@ public class Main {
             R = args[5].toLowerCase();
             debug_level = Integer.parseInt(args[6]);
 
-            // calculate the number of pages
-            number_of_pages = (int) Math.ceil((double)M / P);
+            // calculate the number of frames
+            number_of_frames = (int) Math.floor(M/P);
 
         }else{
             throw new IllegalArgumentException("Incorrect number of arguments; must specify M, P, S, J, N, R, debug_level");
@@ -258,7 +256,7 @@ public class Main {
 
         ArrayList<FTE> new_frametable = new ArrayList<>();
 
-        for(int i=0; i<number_of_pages; i++){
+        for(int i=0; i< number_of_frames; i++){
             // processid, page #, cycle, index
             new_frametable.add(new FTE(-1, -1, -1, -1));
         }
