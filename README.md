@@ -26,20 +26,20 @@ TO-DOs
         
 (9) implement simulation for all inputs:
 
-        - input 01 
-        - input 02 
-        - input 03 
-        - input 04 
+        - input 01 ***
+        - input 02 ***
+        - input 03 ***
+        - input 04 ***
         - input 05 ***
         - input 06 ***
-        - input 07 
+        - input 07 ***
         - input 08 ***
-        - input 09 
+        - input 09 ***
         - input 10 ***
-        - input 11 
-        - input 12 
+        - input 11 ***
+        - input 12 ***
         - input 13 ***
-        - input 14 
+        - input 14 ***
         - input 15 ***
         - input 16 ***
                 

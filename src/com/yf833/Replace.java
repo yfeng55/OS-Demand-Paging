@@ -45,7 +45,7 @@ public class Replace {
 
         int i=0;
         for(FTE f : frame_table){
-            if(f.last_used < least_used_time){
+            if(f.last_used < least_used_time && f.is_active == true){
                 least_used_time = f.last_used;
                 least_recent_index = i;
             }

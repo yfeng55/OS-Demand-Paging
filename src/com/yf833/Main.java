@@ -121,6 +121,7 @@ public class Main {
                             // replace the frames
                             FTE new_frame = new FTE(p.id, p.getCurrentPage(), cycle, evicted_frame_index);
                             new_frame.is_active = true;
+                            new_frame.last_used = cycle;
                             frame_table.set(evicted_frame_index, new_frame);
 
                             // print debug info
@@ -144,6 +145,7 @@ public class Main {
                             //replace free frame with new frame
                             FTE new_frame = new FTE(p.id, p.getCurrentPage(), cycle, highest_free_frame);
                             new_frame.is_active = true;
+                            new_frame.last_used = cycle;
                             frame_table.set(highest_free_frame, new_frame);
 
                             // print debug info
