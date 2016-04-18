@@ -16,13 +16,13 @@ TO-DOs
 (6) setup scanner and random number file ***
 
 (7) refactor 
-        - put eviction methods into Replace.java
-        - put replacement logic into the Replace functions 
+        - put eviction methods into Replace.java ***
+        - put replacement logic into the Replace functions
         - rename variable names 
         - delete unused variables 
 
 (8) fix bugs 
-        - use two random numbers when generating a random reference 
+        - use two random numbers when generating a random reference ***
         
 (9) implement simulation for all inputs:
 

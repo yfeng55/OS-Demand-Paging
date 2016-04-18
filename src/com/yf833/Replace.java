@@ -11,13 +11,13 @@ public class Replace {
     public static FTE fifo(ArrayList<FTE> frame_table){
 
         int evict_index = 0;
-        int earliest_index = frame_table.get(0).time_added;
+        int earliest_time = frame_table.get(0).time_added;
 
         // find the frame that was added first
         int i=0;
         for(FTE f : frame_table){
-            if(f.time_added < earliest_index && f.is_active == true){
-                earliest_index = f.time_added;
+            if(f.time_added < earliest_time && f.is_active == true){
+                earliest_time = f.time_added;
                 evict_index = i;
             }
             i++;
@@ -37,39 +37,23 @@ public class Replace {
     }
 
 
+    // replace the frame that was "least recently used" (frame with the lowest last_used value)
+    public static FTE lru(ArrayList<FTE> frame_table){
 
+        int least_recent_index = 0;
+        int least_used_time = frame_table.get(0).last_used;
 
+        int i=0;
+        for(FTE f : frame_table){
+            if(f.last_used < least_used_time){
+                least_used_time = f.last_used;
+                least_recent_index = i;
+            }
+            i++;
+        }
 
-//    public static FTE lru(ArrayList<FTE> frame_table){
-//
-//        // Divides all frames into four classes (pools A, B, C, & D)
-//        ArrayList<FTE> poolA = new ArrayList<>();     // Not referenced, not modified.
-//        ArrayList<FTE> poolB = new ArrayList<>();     // Not referenced, modified.
-//        ArrayList<FTE> poolC = new ArrayList<>();     // Referenced, not modified.
-//        ArrayList<FTE> poolD = new ArrayList<>();     // Referenced, modified.
-//
-//        for(FTE f : frame_table){
-//            if(f.is_loaded){
-//                if(f.is_modified){
-//                    poolD.add(f);
-//                }
-//                else{
-//                    poolC.add(f);
-//                }
-//            }
-//            else{
-//                if(f.is_modified){
-//                    poolB.add(f);
-//                }
-//                else{
-//                    poolA.add(f);
-//                }
-//            }
-//        }
-//
-//        // find a frame to evict
-//
-//    }
+        return frame_table.get(least_recent_index);
+    }
 
 
 

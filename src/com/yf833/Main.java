@@ -78,6 +78,7 @@ public class Main {
                         //get the location of the hit (index in the frame table), and set that frame to loaded
                         int hit_index = Util.getHit(frame_table, p);
                         frame_table.get(hit_index).is_loaded = true;
+                        frame_table.get(hit_index).last_used = cycle;
 
                         if (debug_level == 1 || debug_level == 11) {
                             System.out.print(p.id + " references word " + p.current_word + " at time " + cycle + ": ");
@@ -97,8 +98,7 @@ public class Main {
                             FTE evicted_frame = null;
 
                             if(R.equals("lru")){
-                                System.out.println("ERROR: invalid replacement algorithm selection");
-                                System.exit(1);
+                                evicted_frame = Replace.lru(frame_table);
                             }
                             else if(R.equals("fifo")){
                                 evicted_frame = Replace.fifo(frame_table);

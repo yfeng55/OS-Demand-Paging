@@ -12,6 +12,7 @@ public class FTE {
     public boolean is_loaded;
     public boolean is_modified;
 
+    public int last_used;
 
 
     public FTE(int process_id, int page_num, int cycle, int index){
@@ -27,6 +28,7 @@ public class FTE {
         this.is_loaded = false;
         this.is_modified = false;
 
+        this.last_used = 0;
 
     }
 

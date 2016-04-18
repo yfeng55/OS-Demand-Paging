@@ -93,8 +93,16 @@ public class Util {
         }
 
         System.out.println();
-        System.out.print("The total number of faults is " + total_faults + " and the overall average residency is ");
-        System.out.println(((double) total_residency / total_evictions) + ".");
+        System.out.print("The total number of faults is " + total_faults);
+
+        if(total_evictions == 0){
+            System.out.println(".\n\tWith no evictions, the overall average residence is undefined.");
+        }else{
+            System.out.print(" and the overall average residency is ");
+            System.out.println(((double) total_residency / total_evictions) + ".");
+        }
+
+
 
     }
 
