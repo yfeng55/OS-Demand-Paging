@@ -67,17 +67,14 @@ public class Main {
                 for(int current=0; current<QUANTUM; current++) {
 
                     // if a process is finished, break out of the loop
-                    if (p.finished == true) {
-                        break;
-                    }
-
+                    if (p.finished == true) { break; }
 
                     // CASE 1: PAGE HIT //
                     if (Util.isHit(frame_table, p)) {
 
-                        //get the location of the hit (index in the frame table), and set that frame to loaded
-                        int hit_index = Util.getHit(frame_table, p);
-                        frame_table.get(hit_index).last_used = cycle;
+                        //get the location of the hit (index in the frame table), and set the last_used value for that frame
+                        int hit_index = Util.getHitIndex(frame_table, p);
+                        frame_table.get(Util.getHitIndex(frame_table, p)).last_used = cycle;
 
                         if (debug_level == 1 || debug_level == 11) {
                             System.out.print(p.id + " references word " + p.current_ref + " (page " + p.getReferencedPage() + ")" + " at time " + cycle + ": ");
@@ -85,6 +82,7 @@ public class Main {
                         }
 
                     }
+
                     // CASE 2: FAULT //
                     else {
 
@@ -92,38 +90,40 @@ public class Main {
                         if (Util.isFull(frame_table, number_of_frames)) {
 
                             //find the frame to replace using the specified replacement algorithm
-                            int evicted_frame_index = -1;
+                            int replace_index = -1;
 
                             if(R.equals("lru")){
-                                evicted_frame_index = Replace.lru(frame_table);
+                                replace_index = Replace.lru(frame_table);
                             }
                             else if(R.equals("fifo")){
-                                evicted_frame_index = Replace.fifo(frame_table);
+                                replace_index = Replace.fifo(frame_table);
                             }
                             else if(R.equals("random")){
                                 int rand_number = Integer.parseInt(rand_scanner.nextLine());
-                                evicted_frame_index = Replace.random(frame_table, rand_number, number_of_frames);
+                                replace_index = Replace.random(frame_table, rand_number, number_of_frames);
                             }
                             else{
                                 System.out.println("ERROR: invalid replacement algorithm selection");
                                 System.exit(1);
                             }
 
-                            FTE evicted_frame = frame_table.get(evicted_frame_index);
+                            FTE replace_frame = frame_table.get(replace_index);
 
-                            processes.get(evicted_frame.process_number-1).num_evictions++;
-                            processes.get(evicted_frame.process_number-1).residency_time += (cycle - evicted_frame.time_added);
+                            processes.get(replace_frame.process_number-1).num_evictions++;
+
+                            // set residency time for the frame: (evicted time - time added)
+                            processes.get(replace_frame.process_number-1).residency_time_sum += (cycle - replace_frame.time_added);
 
                             // replace the frames
-                            FTE new_frame = new FTE(p.id, p.getReferencedPage(), cycle, evicted_frame_index);
+                            FTE new_frame = new FTE(p.id, p.getReferencedPage(), cycle, replace_index);
                             new_frame.is_referenced = true;
                             new_frame.last_used = cycle;
-                            frame_table.set(evicted_frame_index, new_frame);
+                            frame_table.set(replace_index, new_frame);
 
                             // print debug info
                             if (debug_level == 1 || debug_level == 11) {
                                 System.out.print(p.id + " references word " + p.current_ref + " (page " + p.getReferencedPage() + ")" + " at time " + cycle + ": ");
-                                System.out.println("Fault, evicting page " + evicted_frame.page_number + " of " + (evicted_frame.process_number) + " from frame " + evicted_frame_index);
+                                System.out.println("Fault, evicting page " + replace_frame.page_number + " of " + (replace_frame.process_number) + " from frame " + replace_index);
                             }
 
                         }
@@ -131,12 +131,7 @@ public class Main {
                         else {
 
                             // find the highest numbered free frame
-                            int highest_free_frame = frame_table.size() - 1;
-                            for (int i = 0; i < frame_table.size(); i++) {
-                                if (!frame_table.get(i).is_referenced) {
-                                    highest_free_frame = i;
-                                }
-                            }
+                            int highest_free_frame = Util.getHighestFreeFrame(frame_table);
 
                             //replace free frame with new frame
                             FTE new_frame = new FTE(p.id, p.getReferencedPage(), cycle, highest_free_frame);
@@ -155,14 +150,8 @@ public class Main {
 
                     }
 
-
                     // for each process, generate a new reference //
-                    int random_num = Integer.parseInt(rand_scanner.nextLine());
-                    p.generateNextReference(random_num, N, rand_scanner, RAND_MAX);
-                    if(debug_level == 11){
-                        System.out.println(p.id + " uses random number: " + random_num);
-                    }
-
+                    p.generateNextReference(debug_level, N, rand_scanner, RAND_MAX);
 
                     // increment cycle counter //
                     cycle++;

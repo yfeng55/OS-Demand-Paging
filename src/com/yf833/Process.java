@@ -10,6 +10,8 @@ public class Process {
     public double A;
     public double B;
     public double C;
+
+
     public int S;                   // process size
     public int P;                   // page size
 
@@ -17,7 +19,7 @@ public class Process {
     public int current_ref;         // the current reference for this process
     public int num_refs;            // count the number of references for this process
 
-    public int residency_time;      // count the process' residency time
+    public int residency_time_sum;  // count the process' residency time (running sum)
     public int num_faults;          // count the number of faults for this process
     public int num_evictions;       // count the number of evictions for this process
 
@@ -39,7 +41,7 @@ public class Process {
         this.num_refs = 0;
         this.num_faults = 0;
         this.num_evictions = 0;
-        this.residency_time = 0;
+        this.residency_time_sum = 0;
         this.finished = false;
 
     }
@@ -62,7 +64,12 @@ public class Process {
 
 
     // generate the next reference for this process
-    public void generateNextReference(int random_num, int N, Scanner rand_scanner, long RAND_MAX){
+    public void generateNextReference(int debug_level, int N, Scanner rand_scanner, long RAND_MAX){
+
+        int random_num = Integer.parseInt(rand_scanner.nextLine());
+        if(debug_level == 11){
+            System.out.println(this.id + " uses random number: " + random_num);
+        }
 
         double y = random_num / (RAND_MAX + 1d);
 
@@ -77,6 +84,9 @@ public class Process {
         }
         else{
             int next_rand_num = Integer.parseInt(rand_scanner.nextLine());
+            if(debug_level == 11){
+                System.out.println(this.id + " uses random number: " + random_num);
+            }
             this.current_ref = Util.mod(next_rand_num, this.S);
         }
 

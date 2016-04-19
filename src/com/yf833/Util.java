@@ -37,15 +37,14 @@ public class Util {
     }
 
 
-    // check if the current processID exists in the frametable; if not, return false
-    public static int getHit(ArrayList<FTE> frametable, Process p){
+    public static int getHitIndex(ArrayList<FTE> frametable, Process p){
 
         for(int i=0; i<frametable.size(); i++){
             if(frametable.get(i).process_number == p.id  &&  frametable.get(i).page_number == p.getReferencedPage()  &&  frametable.get(i).is_referenced == true){
                 return i;
             }
         }
-        return -1;
+        return -99999;
     }
 
 
@@ -67,6 +66,21 @@ public class Util {
     }
 
 
+    // return the highest numbered free frame from the frame table
+    public static int getHighestFreeFrame(ArrayList<FTE> frame_table){
+
+        int highest_free = 0;
+
+        for (int i = 0; i < frame_table.size(); i++) {
+            if (!frame_table.get(i).is_referenced) {
+                highest_free = i;
+            }
+        }
+
+        return highest_free;
+    }
+
+
     // print output info for the collection of finished processes
     public static void printOutput(ArrayList<Process> processes){
 
@@ -78,7 +92,7 @@ public class Util {
 
         for(Process p : processes){
             total_faults += p.num_faults;
-            total_residency += p.residency_time;
+            total_residency += p.residency_time_sum;
             total_evictions += p.num_evictions;
 
             System.out.print("Process " + p.id + " had ");
@@ -87,7 +101,7 @@ public class Util {
             if(p.num_evictions == 0){
                 System.out.println(".\n\tWith no evictions, the average residence is undefined.");
             }else{
-                System.out.println(" and " + ((double) p.residency_time / p.num_evictions) + " average residency.");
+                System.out.println(" and " + ((double) p.residency_time_sum / p.num_evictions) + " average residency.");
             }
 
         }
